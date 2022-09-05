@@ -50,8 +50,6 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
 
-    private boolean mDiscovering = false;
-
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
@@ -86,22 +84,8 @@ public class BluetoothLeService extends Service {
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
-                if (!mDiscovering) {
-                    Log.i(TAG, "Attempting to start service discovery:" +
+                Log.i(TAG, "Attempting to start service discovery:" +
                             mBluetoothGatt.discoverServices());
-
-                    // ensure we're only discovering once at a time
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mDiscovering) {
-                                mDiscovering = false;
-                            }
-                        }
-                    }, 10000); // 10 seconds
-                } else {
-                    Log.i(TAG, "already discovering");
-                }
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
